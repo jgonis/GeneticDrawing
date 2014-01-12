@@ -4,18 +4,25 @@
  * and open the template in the editor.
  */
 
-package geneticdrawing;
+package GeneticDrawingUI;
 
+import GeneticDrawModel.GeneratedImageModel;
+import java.io.IOException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -26,9 +33,44 @@ import javafx.stage.WindowEvent;
  */
 public class GeneticDrawing extends Application {
     
+    private GeneratedImageModel m_model;
+    private Canvas m_mainCanvas;
+    private ImageComparator m_comparator;
+    private int m_currentDifference = 1;
+    private Image m_originalImage;
+    
+    /**
+     *
+     * @param primaryStage
+     */
     @Override
     public void start(Stage primaryStage) {
-        Canvas mainCanvas = new Canvas(1000, 750);
+        
+        createGui(primaryStage);
+        m_model = new GeneratedImageModel(50, m_mainCanvas.getWidth(), m_mainCanvas.getHeight());
+        createOriginalImage();
+        AnimationTimer timer = new AnimationTimer() {
+
+            @Override
+            public void handle(long l) {
+                m_model.perturb();
+                int result = ImageComparator.compareImage(m_model.draw(), m_originalImage.getPixelReader());
+                if(result < m_currentDifference) {
+                    m_currentDifference = result;
+                    GraphicsContext gc = m_mainCanvas.getGraphicsContext2D();
+                    gc.drawImage(m_model.getImage(), 0, 0);
+                }
+                
+            }
+        };
+        timer.start();
+        
+        
+        
+    }
+
+    private void createGui(Stage primaryStage) {
+        m_mainCanvas = new Canvas(1000, 750);
         Label iterationsPerSec = new Label("Iterations per second: ");
         Button resetButton = new Button("Reset Drawing");
         
@@ -41,7 +83,7 @@ public class GeneticDrawing extends Application {
         
         VBox mainPane = new VBox();
         AnchorPane controlPane = new AnchorPane();
-        mainPane.getChildren().add(mainCanvas);
+        mainPane.getChildren().add(m_mainCanvas);
         mainPane.getChildren().add(controlPane);
         controlPane.getChildren().addAll(iterationsPerSec, resetButton);
         AnchorPane.setLeftAnchor(iterationsPerSec, 10.0);
@@ -60,8 +102,8 @@ public class GeneticDrawing extends Application {
         });
         
         primaryStage.show();
-        
     }
+    
 
     /**
      * The main() method is ignored in correctly deployed JavaFX application. main() serves only as
@@ -72,6 +114,15 @@ public class GeneticDrawing extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private void createOriginalImage() {
+        URL bale = this.getClass().getClassLoader().getResource("images/christianbale.jpg");
+        try {
+            m_originalImage = new Image(bale.openStream());
+        } catch (IOException ex) {
+            Logger.getLogger(GeneticDrawing.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
 }
