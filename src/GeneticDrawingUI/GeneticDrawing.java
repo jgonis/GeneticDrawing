@@ -57,6 +57,7 @@ public class GeneticDrawing extends Application {
                 int result = ImageComparator.compareImage(m_model.draw(), m_originalImage.getPixelReader());
                 if(result < m_currentDifference) {
                     m_currentDifference = result;
+                    m_model.accept();
                     GraphicsContext gc = m_mainCanvas.getGraphicsContext2D();
                     gc.drawImage(m_model.getImage(), 0, 0);
                 }

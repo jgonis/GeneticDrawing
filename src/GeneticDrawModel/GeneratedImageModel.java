@@ -8,6 +8,8 @@ package GeneticDrawModel;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -21,8 +23,9 @@ import javafx.scene.image.WritableImage;
 public class GeneratedImageModel {
 
     private final ArrayList<Triangle> m_imageModel;
+    private ArrayList<Triangle> m_candidateModel;
     private final Canvas m_canvas;
-    private Random m_rand = new Random();
+    private final Random m_rand = new Random();
 
     public GeneratedImageModel(int numberOfTriangles, double canvasWidth, double canvasHeight) {
         m_imageModel = new ArrayList<>(numberOfTriangles);
@@ -35,7 +38,15 @@ public class GeneratedImageModel {
     }
 
     public void perturb() {
-        // TODO implement the perturb method
+        m_candidateModel = new ArrayList<>(m_imageModel.size());
+        for(Triangle t : m_imageModel) {
+            try {
+                m_candidateModel.add(t.clone());
+            } catch (CloneNotSupportedException ex) {
+                Logger.getLogger(GeneratedImageModel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
     }
 
     public PixelReader draw() {
@@ -51,6 +62,9 @@ public class GeneratedImageModel {
     public Image getImage() {
         WritableImage image = m_canvas.snapshot(null, null);
         return image;
+    }
+
+    public void accept() {
     }
 
 }

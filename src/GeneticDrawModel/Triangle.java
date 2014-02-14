@@ -17,8 +17,9 @@ import javafx.scene.paint.Color;
  *
  * @author jgonis
  */
-class Triangle {
-    private ArrayList<Point2D> m_vertices;
+class Triangle implements Cloneable {
+
+    private final ArrayList<Point2D> m_vertices;
     private Color m_color;
     
     public Triangle(Random rand, double width, double height) {
@@ -33,9 +34,7 @@ class Triangle {
         Point2D.Double point3 = new Point2D.Double(rand.nextInt((int)width), rand.nextInt((int)height));
         m_vertices.add(point1);
         m_vertices.add(point2);
-        m_vertices.add(point3);
-        
-        
+        m_vertices.add(point3);        
     }
     
     public void draw(GraphicsContext gc) {
@@ -47,7 +46,16 @@ class Triangle {
         gc.lineTo(m_vertices.get(0).getX(), m_vertices.get(0).getY());
         gc.fill();
         gc.closePath();
+    } 
+    
+    @Override
+    public Triangle clone() throws CloneNotSupportedException {
+        Triangle t = (Triangle)super.clone(); //To change body of generated methods, choose Tools | Templates.
+        for(int i = 0; i < m_vertices.size(); i++) {
+            t.m_vertices.set(i, (Point2D)m_vertices.get(i).clone());
+        }
+        t.m_color = new Color(m_color.getRed(), m_color.getGreen(), m_color.getBlue(), m_color.getOpacity());
+        
+        return t;
     }
-    
-    
 }
