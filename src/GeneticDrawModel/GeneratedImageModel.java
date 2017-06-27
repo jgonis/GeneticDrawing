@@ -22,40 +22,18 @@ import javafx.scene.image.WritableImage;
  */
 public class GeneratedImageModel {
 
-    private final ArrayList<Triangle> m_imageModel;
-    private ArrayList<Triangle> m_candidateModel;
     private final Canvas m_canvas;
     private final Random m_rand = new Random();
 
-    public GeneratedImageModel(int numberOfTriangles, double canvasWidth, double canvasHeight) {
-        m_imageModel = new ArrayList<>(numberOfTriangles);
-        for(int i = 0; i < numberOfTriangles; i++) {
-            Triangle temp = new Triangle(m_rand, canvasWidth, canvasHeight);
-            m_imageModel.add(temp);
-        }
+    public GeneratedImageModel( double canvasWidth, double canvasHeight) {
         m_canvas = new Canvas(canvasWidth, canvasHeight);
 
     }
 
-    public void perturb() {
-        m_candidateModel = new ArrayList<>(m_imageModel.size());
-        for(Triangle t : m_imageModel) {
-            try {
-                m_candidateModel.add(t.clone());
-            } catch (CloneNotSupportedException ex) {
-                Logger.getLogger(GeneratedImageModel.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        
+    public void perturb() {        
     }
 
     public PixelReader draw() {
-        GraphicsContext gc = m_canvas.getGraphicsContext2D();
-        gc.clearRect(0, 0, m_canvas.getWidth(), m_canvas.getHeight());
-        Iterator<Triangle> it = m_imageModel.iterator();
-        while (it.hasNext()) {
-            it.next().draw(gc);
-        }
         return null;
     }
 
@@ -66,5 +44,4 @@ public class GeneratedImageModel {
 
     public void accept() {
     }
-
 }

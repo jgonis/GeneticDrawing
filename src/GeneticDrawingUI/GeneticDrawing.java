@@ -47,7 +47,7 @@ public class GeneticDrawing extends Application {
     public void start(Stage primaryStage) {
         
         createGui(primaryStage);
-        m_model = new GeneratedImageModel(50, m_mainCanvas.getWidth(), m_mainCanvas.getHeight());
+        m_model = new GeneratedImageModel(m_mainCanvas.getWidth(), m_mainCanvas.getHeight());
         createOriginalImage();
         AnimationTimer timer = new AnimationTimer() {
 
