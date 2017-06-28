@@ -13,17 +13,22 @@ import java.util.logging.Logger;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import ui.CanvasContainer;
 
 /**
  *
@@ -32,6 +37,7 @@ import javafx.stage.WindowEvent;
 public class GeneticDrawing extends Application {
     
     private Image m_originalImage;
+    private CanvasContainer m_cv = new  CanvasContainer(640, 480);
     
     /**
      *
@@ -50,21 +56,20 @@ public class GeneticDrawing extends Application {
         resetButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
+                m_cv.reset();
+                m_cv.drawBorder();
             }
         });
         
-        VBox mainPane = new VBox();
-        mainPane.
-        ImageView iv = new ImageView(m_originalImage);
-        mainPane.getChildren().add(iv);
+        BorderPane bp = new BorderPane();
+        //ImageView iv = new ImageView(m_originalImage);
+        bp.setCenter(m_cv.getCanvas());
         AnchorPane controlPane = new AnchorPane();
-        mainPane.getChildren().add(controlPane);
+        bp.setBottom(controlPane);
         controlPane.getChildren().addAll(iterationsPerSec, resetButton);
         AnchorPane.setLeftAnchor(iterationsPerSec, 10.0);
         AnchorPane.setRightAnchor(resetButton, 10.0);
-        
-        Scene scene = new Scene(mainPane);
+        Scene scene = new Scene(bp);
         
         primaryStage.setTitle("GeneticDrawing");
         primaryStage.setScene(scene);
@@ -77,7 +82,27 @@ public class GeneticDrawing extends Application {
         });
         
         primaryStage.show();
+        setupCanvasSizeListeners(bp, controlPane);
+        m_cv.reset();
+        m_cv.drawBorder();
     }
+
+	private void setupCanvasSizeListeners(BorderPane bp, AnchorPane controlPane) {
+		bp.heightProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				m_cv.setHeight((double)newValue - controlPane.getHeight()) ;
+			}
+		});
+        
+        bp.widthProperty().addListener(new ChangeListener<Number>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				m_cv.setWidth((double)newValue);
+			}
+		});
+	}
     
 
     /**
